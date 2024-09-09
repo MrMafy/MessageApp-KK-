@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./:/var/www/html/
+    depends_on:
+      - php
+      - mysql
+
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ./:/var/www/html/
+    depends_on:
+      - mysql
+      - redis
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  mysql:
+    image: mysql:8.2
+    environment:
+      MYSQL_ROOT_PASSWORD: root_testroot
+      MYSQL_DATABASE: messageApp
+      MYSQL_USER: khalil
+      MYSQL_PASSWORD: testroot
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+
+  php-worker:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ./:/var/www/html/
+    command: sh -c "sleep 25 && php /var/www/html/worker.php"
+    depends_on:
+      - redis
+      - mysql
+  
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 1500:80
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root_testroot
+    depends_on:
+      - mysql
+

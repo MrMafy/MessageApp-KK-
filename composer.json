@@ -1,0 +1,14 @@
+{
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Migrations\\": "Migrations/"
+        }
+    },
+    "require": {
+        "doctrine/dbal": "^3.7",
+        "ext-pdo_mysql": "*",
+        "predis/predis": "^2.2",
+      "ext-pdo": "*"
+    }
+}
